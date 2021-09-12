@@ -1,9 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { PaginationDto } from './dto/pagination.dto';
 import { TasksRepository } from './tasks.repository';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class TasksService {
@@ -11,6 +18,15 @@ export class TasksService {
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
   ) {}
+  
+
+  async paginate(options: IPaginationOptions): Promise<Pagination<Task>> {
+    return paginate<Task>(this.tasksRepository, options);
+  }
+  
+  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksRepository.getTasks(filterDto);
+  }
 
   async getTaskById(id: string): Promise<Task> {
     const found = await this.tasksRepository.findOne(id);
