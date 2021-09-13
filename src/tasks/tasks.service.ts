@@ -18,17 +18,16 @@ export class TasksService {
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
   ) {}
-  
 
   async paginate(options: IPaginationOptions): Promise<Pagination<Task>> {
     return paginate<Task>(this.tasksRepository, options);
   }
-  
+
   getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
     return this.tasksRepository.getTasks(filterDto);
   }
 
-  async getTaskById(id: string): Promise<Task> {
+  async getTaskById(id: number): Promise<Task> {
     const found = await this.tasksRepository.findOne(id);
 
     if (!found) {
@@ -42,7 +41,7 @@ export class TasksService {
     return this.tasksRepository.createTask(createTaskDto);
   }
 
-  async deleteTask(id: string): Promise<void> {
+  async deleteTask(id: number): Promise<void> {
     const result = await this.tasksRepository.delete(id);
 
     if (result.affected === 0) {
@@ -50,7 +49,7 @@ export class TasksService {
     }
   }
 
-  async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+  async updateTaskStatus(id: number, status: TaskStatus): Promise<Task> {
     const task = await this.getTaskById(id);
 
     task.status = status;
